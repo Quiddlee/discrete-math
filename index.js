@@ -14,6 +14,7 @@ const countLetters = () => {
         count = 0;
     }
 };
+countLetters();
 for (const key in ids) {
     ids[key] = ids[key] / input.length;
 }
@@ -21,11 +22,17 @@ const sorty = (array) => {
     return array.sort(([, a], [, b]) => b - a);
 };
 const idsMatrix = Object.entries(ids);
-console.log(idsMatrix);
+// console.log(idsMatrix);
+const res = [];
 const huffman = (array) => {
-    if (array.length === 1)
-        return array[0];
+    if (res.length === array.length - 1)
+        return res;
     const sortedArr = sorty(array);
-    return huffman(array[array.length - 1][1]) + huffman(array[array.length - 2][1]);
+    console.log(sortedArr);
+    // array[array.length - 1] + array[array.length - 2];
+    res.push(sortedArr[sortedArr.length - 2]);
+    res.push(sortedArr[sortedArr.length - 1]);
+    return res;
+    // return huffman(array);
 };
 console.log(huffman(idsMatrix));

@@ -5,7 +5,7 @@ const probability = {};
 const ids: {[key: string]: number} = {};
 let count: number = 0;
 
-const countLetters = (): {[key: string]: number} => {
+const countLetters = () => {
     for (let i = 0; i < input.length; i++) {
         for (let j = 0; j < input.length; j++) {
             if (input[i] === input[j]) {
@@ -17,6 +17,7 @@ const countLetters = (): {[key: string]: number} => {
         count = 0;
     }
 };
+countLetters();
 
 for (const key in ids) {
     ids[key] = ids[key] / input.length;
@@ -28,14 +29,19 @@ const sorty = (array: [string, number][]): [string, number][] => {
 
 const idsMatrix = Object.entries(ids);
 
-console.log(idsMatrix);
+// console.log(idsMatrix);
 
+const res: [string, number][] = [];
 
 const huffman = (array: [string, number][]) => {
-    if (array.length === 1) return array[0];
+    if (res.length === array.length - 1) return res;
     const sortedArr: [string, number][] = sorty(array);
-
-    return huffman(array[array.length - 1][1]) + huffman(array[array.length - 2][1]);
+    console.log(sortedArr);
+    // array[array.length - 1] + array[array.length - 2];
+    res.push(sortedArr[sortedArr.length - 2]);
+    res.push(sortedArr[sortedArr.length - 1]);
+    return res; 
+    // return huffman(array);
 
 };
 console.log(huffman(idsMatrix));
