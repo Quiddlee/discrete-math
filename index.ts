@@ -39,3 +39,21 @@ const huffman = (array: [string, number][]) => {
 
 };
 console.log(huffman(idsMatrix));
+
+
+
+// function Huffman(arr, memo = {}) {
+//     if (arr.length === 1) return arr[0];
+//     const checked = arr.sort((a, b) => a - b);
+
+//     console.log(checked);
+    
+//     checked[1] = +(checked[0] + checked[1]).toFixed(2);
+//     // // checked[checked.length - 2][0] = `${checked[checked.length - 1][0]}, ${checked[checked.length - 2][0]}`;
+//     delete checked[0];
+
+//     memo[arr[0]] = 01;
+
+//     return Huffman(checked.filter(elem => elem !== undefined), );
+// }
+// console.log(Huffman(wassup));
