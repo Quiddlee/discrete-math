@@ -1,5 +1,3 @@
-// 0 1 1 0 0 0 1 0 0-1 1 1 0 0 1-0 1 0 0 1 1 1-0 0 0 0 0 1-1 1 1 1 1 0 1 1 1 0-0 0 1 0 1 0 0-
-
 interface betas {
     [key: string]: number;
 }
@@ -7,6 +5,8 @@ interface betas {
 interface alphabet {
     [key: string]: string;
 }
+// '011000100'
+// ' 0 1 1 0 0 0 1 0 0-1 1 1 0 0 1-0 1 0 0 1 1 1-0 0 0 0 0 1-1 1 1 1 1 0 1 1 1 0-0 0 1 0 1 0 0-'
 
 let initial = ' 0 1 1 0 0 0 1 0 0-1 1 1 0 0 1-0 1 0 0 1 1 1-0 0 0 0 0 1-1 1 1 1 1 0 1 1 1 0-0 0 1 0 1 0 0-'.replace(/\s/g, '');
 const betas: betas = {};
@@ -48,8 +48,6 @@ const cutString = (str: string) => {
     const subString = str.slice(0, str.indexOf('-'));
     initial = str.slice(str.indexOf('-') + 1, str.length);
 
-    // console.log(subString, initial);
-
     return subString.replace(/-/g, '');
 };
 
@@ -64,48 +62,18 @@ const hamming = (str: string): null => {
     let sum: number = 0;
     let outputResult: string[] = [];
 
-    console.log(input);
-
-    // b1
-    for (let i = 3; i < input.length; i += 2) {
-        sum ^= +input[i];
-    }
-    output['1'] = sum;
-    sum = 0;
-
-    // b2
-    for (let i = 2; i < input.length; i += 4) {
-        for (let j = i; j < i + 2; j++) {
-            if (j !== 2) {
-                sum ^= +input[i];
+    for (let i = 1; i < input.length; i *= 2) {
+        for (let j = i - 1; j < input.length; j += i + i) {
+            for (let k = j; k < i + j; k++) {
+                if (input[k] !== undefined && k !== 0 && k !== 1 && k !== 3 && k !== 7) {
+                    sum ^= +input[k];
+                }
             }
         }
-    }
-    output['2'] = sum;
-    sum = 0;
     
-    //b4
-    for (let i = 3; i < input.length; i += 8) {
-        for (let j = i; j < i + 4; j++) {
-            if (j !== 4) {
-                sum ^= +input[j];
-            }
-        }
+        output[i] = sum;
+        sum = 0;
     }
-    output['4'] = sum;
-    sum = 0;
-    
-    for (let i = 8; i < input.length; i += 16) {
-        for (let j = i; j < i + 8; j++) {
-            if (input[j] !== undefined) {
-                sum ^= +input[0];
-            }
-        }
-    }
-    output['8'] = sum;
-    sum = 0;
-
-    // console.log(output);
 
     for (let i = 1; i < input.length; i *= 2) {
         betas[i] = +input[i - 1];
@@ -120,8 +88,6 @@ const hamming = (str: string): null => {
         }
     }
 
-    // console.log(result);
-    
     const error = result.reduce((acc, curr) => acc + curr) - 1;
     for (let i = 0; i < input.length; i++) {
         if (i === error) {
@@ -133,23 +99,36 @@ const hamming = (str: string): null => {
         }
     }
 
-    // console.log(outputResult.join(''));
-
     for (let i = 0; i < outputResult.length; i++) {
         if (i !== 0 && i !== 1 && i !== 3 && i !== 7) {
             decodedResult += outputResult[i];
         }
     }
 
-    console.log(decodedResult);
-
     for (const key in alphabet) {
         if (key === decodedResult) answer += alphabet[key];
     }
     
-    console.log(answer);
     return hamming(initial);
 }
 hamming(initial);
 
 console.log(answer);
+
+// for (let i = 1; i < initial.length; i *= 2) {
+//     console.log('--', i);
+    
+//     for (let j = i - 1; j < initial.length; j += i + i) {
+//         for (let k = j; k < i + j; k++) {
+//             if (initial[k] !== undefined && k !== 0 && k !== 1 && k !== 3 && k !== 7) {
+//                 sum ^= +initial[k];
+//                 console.log(initial[k], 'k = ' + (k + 1));
+//             }
+//         }
+//     }
+
+//     output[i] = sum;
+//     sum = 0;
+// }
+
+// console.log(output);
