@@ -1,13 +1,9 @@
 "use strict";
 // '011000100'
 // ' 0 1 1 0 0 0 1 0 0-1 1 1 0 0 1-0 1 0 0 1 1 1-0 0 0 0 0 1-1 1 1 1 1 0 1 1 1 0-0 0 1 0 1 0 0-'
-let initial = ' 0 1 1 0 0 0 1 0 0-1 1 1 0 0 1-0 1 0 0 1 1 1-0 0 0 0 0 1-1 1 1 1 1 0 1 1 1 0-0 0 1 0 1 0 0-'.replace(/\s/g, '');
-const betas = {};
-const output = {};
-const result = [];
-let sum = 0;
-let outputResult = [];
+let initial = ' 0 0 0 1 1 1 0-1 1 1 0 1 0-0 0 1 0 1 1 1-1 1 0 0 1 1 1 0 0-0 0 0 0 1 0'.replace(/\s/g, '');
 let answer = '';
+const controlBits = [0, 1, 3, 7, 15];
 const alphabet = {
     '000': '_',
     '100': 'т',
@@ -37,53 +33,60 @@ const alphabet = {
     '-': '-'
 };
 const cutString = (str) => {
-    const subString = str.slice(0, str.indexOf('-'));
-    initial = str.slice(str.indexOf('-') + 1, str.length);
+    let subString;
+    if (str.match('-'))
+        subString = str.slice(0, str.indexOf('-'));
+    else
+        subString = str;
+    initial = str.slice(str.indexOf('-') + 1);
     return subString.replace(/-/g, '');
 };
+// const cutString = (str: string) => {
+//     const subString = str.slice(0, str.indexOf('-'));
+//     initial = str.slice(str.indexOf('-') + 1, str.length);
+//
+//     return subString.replace(/-/g, '');
+// };
 const hamming = (str) => {
-    if (str.length === 0)
+    if (!str.match(/\d/))
         return null;
     let decodedResult = '';
     let input = cutString(str);
     const betas = {};
-    const output = {};
-    const result = [];
-    let sum = 0;
-    let outputResult = [];
+    const betasMod = {};
+    const betasDifference = [];
+    let fixedBits = [];
     for (let i = 1; i < input.length; i *= 2) {
+        let sum = 0;
         for (let j = i - 1; j < input.length; j += i + i) {
             for (let k = j; k < i + j; k++) {
-                if (input[k] !== undefined && k !== 0 && k !== 1 && k !== 3 && k !== 7) {
+                if (input[k] !== undefined && !controlBits.includes(k)) {
                     sum ^= +input[k];
                 }
             }
         }
-        output[i] = sum;
-        sum = 0;
-    }
-    for (let i = 1; i < input.length; i *= 2) {
+        betasMod[i] = sum;
         betas[i] = +input[i - 1];
     }
     const betasEntries = Object.entries(betas);
-    const outputEntries = Object.entries(output);
+    const betasModEntries = Object.entries(betasMod);
     for (let i = 0; i < Object.keys(betas).length; i++) {
-        if (betasEntries[i][1] !== outputEntries[i][1]) {
-            result.push(+betasEntries[i][0]);
+        if (betasEntries[i][1] !== betasModEntries[i][1]) {
+            betasDifference.push(+betasEntries[i][0]);
         }
     }
-    const error = result.reduce((acc, curr) => acc + curr) - 1;
+    const error = betasDifference.reduce((acc, curr) => acc + curr) - 1;
     for (let i = 0; i < input.length; i++) {
         if (i === error) {
-            outputResult.push((+input[i] ^ 1).toString());
+            fixedBits.push((+input[i] ^ 1).toString());
         }
         if (i !== error) {
-            outputResult.push(input[i]);
+            fixedBits.push(input[i]);
         }
     }
-    for (let i = 0; i < outputResult.length; i++) {
-        if (i !== 0 && i !== 1 && i !== 3 && i !== 7) {
-            decodedResult += outputResult[i];
+    for (let i = 0; i < fixedBits.length; i++) {
+        if (!controlBits.includes(i)) {
+            decodedResult += fixedBits[i];
         }
     }
     for (const key in alphabet) {
@@ -94,17 +97,3 @@ const hamming = (str) => {
 };
 hamming(initial);
 console.log(answer);
-// for (let i = 1; i < initial.length; i *= 2) {
-//     console.log('--', i);
-//     for (let j = i - 1; j < initial.length; j += i + i) {
-//         for (let k = j; k < i + j; k++) {
-//             if (initial[k] !== undefined && k !== 0 && k !== 1 && k !== 3 && k !== 7) {
-//                 sum ^= +initial[k];
-//                 console.log(initial[k], 'k = ' + (k + 1));
-//             }
-//         }
-//     }
-//     output[i] = sum;
-//     sum = 0;
-// }
-// console.log(output);

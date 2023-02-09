@@ -2,20 +2,13 @@ interface betas {
     [key: string]: number;
 }
 
-interface alphabet {
-    [key: string]: string;
-}
 // '011000100'
 // ' 0 1 1 0 0 0 1 0 0-1 1 1 0 0 1-0 1 0 0 1 1 1-0 0 0 0 0 1-1 1 1 1 1 0 1 1 1 0-0 0 1 0 1 0 0-'
 
 let initial = ' 0 1 1 0 0 0 1 0 0-1 1 1 0 0 1-0 1 0 0 1 1 1-0 0 0 0 0 1-1 1 1 1 1 0 1 1 1 0-0 0 1 0 1 0 0-'.replace(/\s/g, '');
-const betas: betas = {};
-const output: betas = {};
-const result: number[] = [];
-let sum: number = 0;
-let outputResult: string[] = [];
-let answer: string = '';
-const alphabet: alphabet = {
+let answer = '';
+const controlBits = [0, 1, 3, 7, 15];
+const alphabet: {[key: string]: string} = {
     '000': '_',
     '100': 'т',
     '0011': 'и',
@@ -45,63 +38,71 @@ const alphabet: alphabet = {
 };
 
 const cutString = (str: string) => {
-    const subString = str.slice(0, str.indexOf('-'));
-    initial = str.slice(str.indexOf('-') + 1, str.length);
+    let subString: string;
+
+    if (str.match('-')) {
+        subString = str.slice(0, str.indexOf('-'))
+
+        initial = str.slice(str.indexOf('-') + 1);
+    }
+    else {
+        subString = str;
+        
+        initial = '';
+    }
+
 
     return subString.replace(/-/g, '');
 };
 
 const hamming = (str: string): null => {
-    if (str.length === 0) return null;
+    if (!str.match(/\d/)) return null;
 
     let decodedResult: string = '';
     let input = cutString(str);
     const betas: betas = {};
-    const output: betas = {};
-    const result: number[] = [];
-    let sum: number = 0;
-    let outputResult: string[] = [];
+    const betasMod: betas = {};
+    const betasDifference: number[] = [];
+    let fixedBits: string[] = [];
 
     for (let i = 1; i < input.length; i *= 2) {
+        let sum = 0;
+
         for (let j = i - 1; j < input.length; j += i + i) {
             for (let k = j; k < i + j; k++) {
-                if (input[k] !== undefined && k !== 0 && k !== 1 && k !== 3 && k !== 7) {
+                if (input[k] !== undefined && !controlBits.includes(k)) {
                     sum ^= +input[k];
                 }
             }
         }
     
-        output[i] = sum;
-        sum = 0;
-    }
-
-    for (let i = 1; i < input.length; i *= 2) {
+        betasMod[i] = sum;
         betas[i] = +input[i - 1];
     }
     
     const betasEntries = Object.entries(betas);
-    const outputEntries = Object.entries(output);
+    const betasModEntries = Object.entries(betasMod);
 
     for (let i = 0; i < Object.keys(betas).length; i++) {
-        if (betasEntries[i][1] !== outputEntries[i][1]) {
-            result.push(+betasEntries[i][0]);
+        if (betasEntries[i][1] !== betasModEntries[i][1]) {
+            betasDifference.push(+betasEntries[i][0]);
         }
     }
 
-    const error = result.reduce((acc, curr) => acc + curr) - 1;
+    const error = betasDifference.reduce((acc, curr) => acc + curr) - 1;
     for (let i = 0; i < input.length; i++) {
         if (i === error) {
-            outputResult.push((+input[i] ^ 1).toString());
+            fixedBits.push((+input[i] ^ 1).toString());
         }
     
         if (i !== error) {
-            outputResult.push(input[i]);
+            fixedBits.push(input[i]);
         }
     }
 
-    for (let i = 0; i < outputResult.length; i++) {
-        if (i !== 0 && i !== 1 && i !== 3 && i !== 7) {
-            decodedResult += outputResult[i];
+    for (let i = 0; i < fixedBits.length; i++) {
+        if (!controlBits.includes(i)) {
+            decodedResult += fixedBits[i];
         }
     }
 
@@ -111,24 +112,7 @@ const hamming = (str: string): null => {
     
     return hamming(initial);
 }
+
 hamming(initial);
 
 console.log(answer);
-
-// for (let i = 1; i < initial.length; i *= 2) {
-//     console.log('--', i);
-    
-//     for (let j = i - 1; j < initial.length; j += i + i) {
-//         for (let k = j; k < i + j; k++) {
-//             if (initial[k] !== undefined && k !== 0 && k !== 1 && k !== 3 && k !== 7) {
-//                 sum ^= +initial[k];
-//                 console.log(initial[k], 'k = ' + (k + 1));
-//             }
-//         }
-//     }
-
-//     output[i] = sum;
-//     sum = 0;
-// }
-
-// console.log(output);
