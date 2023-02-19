@@ -2,10 +2,7 @@ interface betas {
     [key: string]: number;
 }
 
-// '011000100'
-// ' 0 1 1 0 0 0 1 0 0-1 1 1 0 0 1-0 1 0 0 1 1 1-0 0 0 0 0 1-1 1 1 1 1 0 1 1 1 0-0 0 1 0 1 0 0-'
-
-let initial = ' 0 1 1 0 0 0 1 0 0-1 1 1 0 0 1-0 1 0 0 1 1 1-0 0 0 0 0 1-1 1 1 1 1 0 1 1 1 0-0 0 1 0 1 0 0-'.replace(/\s/g, '');
+let initial = '0 1 1 0 0 0 1 0 0-1 1 1 0 0 1-0 1 0 0 1 1 1-0 0 0 0 0 1-1 1 1 1 1 0 1 1 1 0-0 0 1 0 1 0 0-'.replace(/\s/g, '');
 let answer = '';
 const controlBits = [0, 1, 3, 7, 15];
 const alphabet: {[key: string]: string} = {
@@ -42,12 +39,10 @@ const cutString = (str: string) => {
 
     if (str.match('-')) {
         subString = str.slice(0, str.indexOf('-'))
-
         initial = str.slice(str.indexOf('-') + 1);
     }
     else {
         subString = str;
-        
         initial = '';
     }
 
@@ -79,9 +74,9 @@ const hamming = (str: string): null => {
         betasMod[i] = sum;
         betas[i] = +input[i - 1];
     }
-    
-    const betasEntries = Object.entries(betas);
+
     const betasModEntries = Object.entries(betasMod);
+    const betasEntries = Object.entries(betas);
 
     for (let i = 0; i < Object.keys(betas).length; i++) {
         if (betasEntries[i][1] !== betasModEntries[i][1]) {

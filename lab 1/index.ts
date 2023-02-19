@@ -1,50 +1,75 @@
-'use strict';
-
-const input: string = 'Математика';
-const probability = {};
-const ids: {[key: string]: number} = {};
-let count: number = 0;
-
-const countLetters = () => {
-    for (let i = 0; i < input.length; i++) {
-        for (let j = 0; j < input.length; j++) {
-            if (input[i] === input[j]) {
-                count++;
-                ids[input[i].toLowerCase()] = count;
-            }
-        }
-    
-        count = 0;
-    }
-};
-countLetters();
-
-for (const key in ids) {
-    ids[key] = ids[key] / input.length;
+interface Ids {
+    [key: string]: number;
 }
 
-const sorty = (array: [string, number][]): [string, number][] => {
-    return array.sort(([, a], [, b]) => b - a);
-};
+class Huffman {
+    input: string;
+    probability: Ids;
+    ids: Ids;
+    count: number;
+    length: number;
+    res: [string, number][];
+    idsMatrix: [string, number][];
 
-const idsMatrix = Object.entries(ids);
+    constructor(input: string) {
+        this.input = input;
+        this.probability = {};
+        this.ids = {};
+        this.count = 0;
+        this.length = input.length;
+        this.res = [];
+        this.idsMatrix = [];
+    };
 
-// console.log(idsMatrix);
+    countLetters() {
+        for (let i = 0; i < this.length; i++) {
+            for (let j = 0; j < this.length; j++) {
+                if (this.input[i] === this.input[j]) {
+                    this.count++;
+                    this.ids[this.input[i].toLowerCase()] = this.count;
+                }
+            }
 
-const res: [string, number][] = [];
+            this.count = 0;
+        }
+    };
 
-const huffman = (array: [string, number][]) => {
-    if (res.length === array.length - 1) return res;
-    const sortedArr: [string, number][] = sorty(array);
-    console.log(sortedArr);
-    // array[array.length - 1] + array[array.length - 2];
-    res.push(sortedArr[sortedArr.length - 2]);
-    res.push(sortedArr[sortedArr.length - 1]);
-    return res; 
-    // return huffman(array);
+    makeIds() {
+        for (const key in this.ids) {
+            this.ids[key] = this.ids[key] / this.length;
+        }
 
-};
-console.log(huffman(idsMatrix));
+        return Object.entries(this.ids);
+    };
+
+    sorty(array: [string, number][]) {
+        return array.sort(([, a], [, b]) => b - a);
+    };
+
+
+
+    render() {
+        this.countLetters();
+        this.idsMatrix = this.makeIds();
+        this.sorty(this.idsMatrix);
+        console.log(this.idsMatrix);
+    };
+}
+
+new Huffman('Математика').render();
+
+// const huffman = (array: [string, number][]) => {
+//     if (res.length === array.length - 1) return res;
+//     const sortedArr: [string, number][] = sorty(array);
+//     console.log(sortedArr);
+//     // array[array.length - 1] + array[array.length - 2];
+//     res.push(sortedArr[sortedArr.length - 2]);
+//     res.push(sortedArr[sortedArr.length - 1]);
+//     return res;
+//     // return huffman(array);
+//
+// };
+// console.log(huffman(idsMatrix));
 
 
 
