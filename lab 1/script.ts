@@ -2,23 +2,32 @@ interface Ids {
     [key: string]: number;
 }
 
+interface Bits {
+    [key: string]: string;
+}
+
+type StrNumArr = [string, number][];
+
 class Huffman {
     input: string;
-    probability: Ids;
+    probability: StrNumArr;
     ids: Ids;
     count: number;
     length: number;
-    res: [string, number][];
-    idsMatrix: [string, number][];
+    res: StrNumArr;
+    idsMatrix: StrNumArr;
+    bits: Bits;
+
 
     constructor(input: string) {
         this.input = input;
-        this.probability = {};
+        this.probability = [];
         this.ids = {};
         this.count = 0;
         this.length = input.length;
         this.res = [];
         this.idsMatrix = [];
+        this.bits = {};
     };
 
     countLetters() {
@@ -36,55 +45,59 @@ class Huffman {
 
     makeIds() {
         for (const key in this.ids) {
-            this.ids[key] = this.ids[key] / this.length;
+            this.ids[key] = Number((this.ids[key] / this.length).toFixed(2));
         }
 
         return Object.entries(this.ids);
     };
 
     sorty(array: [string, number][]) {
-        return array.sort(([, a], [, b]) => b - a);
+        array.sort(([, a], [, b]) => b - a);
     };
 
+    countBits(arr: [string, number][]): [string, number][] {
+        if (arr.length === 1) return arr;
+        this.sorty(arr);
 
+        const one = (arr[arr.length - 2][0]).split(',');
+        const zero = (arr[arr.length - 1][0]).split(',');
+
+        console.log(arr);
+
+        // console.log(one);
+        // console.log(zero);
+
+        zero.forEach(elem => {
+            if (elem.trim() in this.bits) {
+                this.bits[elem.trim()] += 0;
+            }
+        });
+
+        one.forEach(elem => {
+            if (elem.trim() in this.bits) {
+                this.bits[elem.trim()] += 1;
+            }
+        });
+
+        arr[arr.length - 2][1] = Number((arr[arr.length - 1][1] + arr[arr.length - 2][1]).toFixed(2));
+        arr[arr.length - 2][0] = `${arr[arr.length - 1][0]}, ${arr[arr.length - 2][0]}`;
+        delete arr[arr.length - 1];
+
+        return this.countBits(arr.filter(elem => elem !== undefined));
+    };
 
     render() {
         this.countLetters();
         this.idsMatrix = this.makeIds();
+        this.probability = [...this.idsMatrix];
+
+        this.idsMatrix.forEach(elem => {
+            this.bits[Object.values(elem)[0]] = '';
+        });
+
         this.sorty(this.idsMatrix);
-        console.log(this.idsMatrix);
+        console.log(this.countBits(this.idsMatrix), this.bits);
     };
 }
 
-new Huffman('Математика').render();
-
-// const huffman = (array: [string, number][]) => {
-//     if (res.length === array.length - 1) return res;
-//     const sortedArr: [string, number][] = sorty(array);
-//     console.log(sortedArr);
-//     // array[array.length - 1] + array[array.length - 2];
-//     res.push(sortedArr[sortedArr.length - 2]);
-//     res.push(sortedArr[sortedArr.length - 1]);
-//     return res;
-//     // return huffman(array);
-//
-// };
-// console.log(huffman(idsMatrix));
-
-
-
-// function Huffman(arr, memo = {}) {
-//     if (arr.length === 1) return arr[0];
-//     const checked = arr.sort((a, b) => a - b);
-
-//     console.log(checked);
-    
-//     checked[1] = +(checked[0] + checked[1]).toFixed(2);
-//     // // checked[checked.length - 2][0] = `${checked[checked.length - 1][0]}, ${checked[checked.length - 2][0]}`;
-//     delete checked[0];
-
-//     memo[arr[0]] = 01;
-
-//     return Huffman(checked.filter(elem => elem !== undefined), );
-// }
-// console.log(Huffman(wassup));
+new Huffman('богдан').render();
