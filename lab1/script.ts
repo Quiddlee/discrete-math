@@ -52,7 +52,7 @@ class Huffman {
 
     makeIds() {
         for (const key in this.ids) {
-            this.ids[key] = Number((this.ids[key] / this.length).toFixed(1));
+            this.ids[key] = Number((this.ids[key] / this.length).toFixed(2));
         }
 
         return Object.entries(this.ids);
@@ -83,7 +83,7 @@ class Huffman {
             }
         });
 
-        arr[penult][1] = +(arr[last][1] + arr[penult][1]).toFixed(1);
+        arr[penult][1] = +(arr[last][1] + arr[penult][1]).toFixed(2);
         arr[penult][0] = `${arr[last][0]}, ${arr[penult][0]}`;
         delete arr[last];
 
@@ -98,7 +98,7 @@ class Huffman {
             res += prob[key] * this.bits[key].length;
         }
 
-        return res;
+        return res.toFixed(2);
     };
 
     init() {
@@ -118,8 +118,8 @@ class Huffman {
         }
 
         console.log(this.bits);
-        console.log(this.lAvg());
+        console.log(`Lсер = ${this.lAvg()}`);
     };
 }
 
-new Huffman('Математика').init();
+new Huffman('Щербина Богдан Тарасович').init();
